@@ -1,0 +1,117 @@
+#Read the CSV file into a string. Split string on the newline character. Display the first 10 values in the resulting list.
+us_births = open("US_births_1994-2003_CDC_NCHS.csv").read().split("\n")
+us_births[0:10]
+
+#Read the file into a string, split the string on the newline character ("\n"),remove the header row. Assign this list to 
+#string_list and create an empty list named final_list. Create an empty list, split each row (,).
+#Display the first 10 rows,on integer values, no header row.
+def read_csv(csv_file):
+    string_list = open(csv_file).read().split("\n")
+    string_list = string_list[1:]
+    final_list = []
+    
+    for sl in string_list:
+        int_fields = []
+        string_fields = sl.split(",")
+        for value in string_fields:
+            int_fields.append(int(value))
+    
+        final_list.append(int_fields)
+    
+    return final_list
+
+cdc_list = read_csv("US_births_1994-2003_CDC_NCHS.csv")
+cdc_list[0:10]
+
+#Create an empty dictionary, births_per_month, to store the monthly totals.
+def month_births(data):
+    births_per_month = {}
+    
+    for row in data:
+        month = row[1] #second column in list of lists
+        births = row[4] #fifth column in list of lists
+        
+        if month in births_per_month:
+            births_per_month[month] = births_per_month[month] + 1
+        else:
+            births_per_month[month] = births
+    return births_per_month
+
+cdc_month_births = month_births(cdc_list)
+cdc_month_births
+
+#Dictionary containing the total number of births for each unique value of the day_of_week column.
+def dow_births(data):
+     births_per_dow = {}
+    
+     for row in data:
+        dow = row[3] #fourth column in list of lists
+        births = row[4] #fifth column in list of lists
+        
+        if dow in births_per_dow:
+            births_per_dow[dow] = births_per_dow[dow] + 1
+        else:
+            births_per_dow[dow] = births
+    
+     return births_per_dow
+
+cdc_day_births = dow_births(cdc_list)
+cdc_day_births
+
+
+##create a function that works for all columns in dataset
+def calc_counts(data, column):
+    #populates and returns a dictionary containing the total number
+    # of births for each unique value in the column at position <column>
+    sums_dict = {}
+    
+    for row in data:
+        col_value = row[column]
+        births = row[4]
+        
+        if col_value in sums_dict:
+            sums_dict[col_value] = sums_dict[col_value] + births
+        else:
+            sums_dict[col_value] = births
+            
+    return sums_dict
+
+#return totals below for each column in dataset
+cdc_year_births = calc_counts(cdc_list, 0)
+cdc_month_births = calc_counts(cdc_list, 1)
+cdc_dom_births = calc_counts(cdc_list, 2)
+cdc_dow_births = calc_counts(cdc_list, 3)
+
+#display value calculated for births by year
+cdc_year_births
+#dispaly value calculated for births by month
+cdc_month_births
+#display value calculated for births by day of month
+cdc_dom_births
+#display value calculated for births by date of week
+cdc_dow_births
+
+
+# function to extract the same values across years;
+# also calculate the differences between consecutive values
+# to show if number of births is increasing or decreasing
+
+#let's see how the number of Monday births changed between 1994
+#and 2003
+
+monday_births = {}
+
+for row in cdc_list:
+    year = row[0]
+    day_of_week = row[3]
+    births = row[4]
+    
+    if day_of_week == 2: #monday
+        if year in monday_births:
+            monday_births[year] += 1
+        else:
+            monday_births[year] = births
+        
+monday_births
+
+
